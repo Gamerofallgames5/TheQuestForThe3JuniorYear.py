@@ -8,7 +8,7 @@ Author:   Erins Bozhori
 Created:  19/10/2022
 ------------------------------------------------------------------------------
 '''
-#test
+
 from typing import List
 
 new_game = 0
@@ -24,7 +24,7 @@ dmg_30 = "(DMG:30)"
 dmg_40 = "(DMG:40)"
 dmg_50 = "(DMG:50)"
 action = 0
-commons_explored = 0
+explored_list = [0,0,0,0,0]
 weapon_equiped = inventory[0]
 medical_supply = 0
 damage = 10
@@ -87,6 +87,24 @@ def tutorial():
     input("Press enter to end the tutorial: ")
     intro()
 
+def skillcheck():
+    slowprint("Skillcheck Time!")
+    input("Press enter when you are ready: ")
+    start_time = time.time()
+    num_1 = random.randint(1,101)
+    num_2 = random.randint(1,101)
+    anwser = str(num_1 + num_2)
+    user_anwser = input("What is " + str(num_1) + " + " + str(num_2) + ": ")
+    end_time = time.time()
+    time_elapsed = end_time - start_time
+    if user_anwser == anwser and time_elapsed <= 10:
+        slowprint("CORRECT!")
+        user_correct = True
+    else:
+        slowprint("INCORRECT")
+        user_correct = False
+    return user_correct
+
 def map():
     wipe()
     global place
@@ -99,7 +117,7 @@ def map():
             commons()
         if place.lower() == "gym":
             gym()
-        if place.lower() == "arts hall":
+        if place.lower() == "arts hall" or place.lower() == "artshall":
             arts()
         if place.lower() == "floor 1" or place.lower() == "floor1":
             floor_1()
@@ -110,6 +128,22 @@ def map():
         if place.lower() == "machine shop" or place.lower() == "machineshop":
             machine_shop()
 #Long story short, if the place variable matches the location, then it calls the location function
+
+def machine_shop():
+    pass
+
+def floor_3():
+    pass
+
+def floor_2():
+    pass
+
+def floor_1():
+    pass
+
+def arts():
+    pass
+
 def gym():
     global gym_entered
     global action
@@ -228,7 +262,7 @@ def commons():
       if action == "move" or action == "Move":
         map()
           # If the player wants to move then call the map
-      if action.lower() == "explore" and commons_explored == 0:
+      if action.lower() == "explore" and explored_list[0]== 0:
         ambush = random.randrange(1,5)
         print()
         slowprint("You look around the commons area...", 50)

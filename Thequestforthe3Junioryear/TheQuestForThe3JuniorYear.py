@@ -9,14 +9,14 @@ Created:  19/10/2022
 ------------------------------------------------------------------------------
 '''
 
-from typing import List
+
 
 new_game = 0
 place = 1
-inventory: list[str] = ["Metal Water Bottle - A Metal Water Bottle given to you by Davis (DMG:10)", ]
-shop_inventory: list[str] = ["ERIC'S PREMO PRIME!", "1. Green Prime - Instant 20 health healed, no skill check needed (2 Medical Supplies)",
+inventory = ["Metal Water Bottle - A Metal Water Bottle given to you by Davis (DMG:10)", ]
+shop_inventory = ["ERIC'S PREMO PRIME!", "1. Green Prime - Instant 20 health healed, no skill check needed (2 Medical Supplies)",
                               "2. Red Prime - Instant 20 damage to enemy (1 medical supply)", "3. Blue Prime - 50/50 chance to instantly end combat when used (5 Medical supplies)"]
-consumable = "(Consumable)"
+consumable = "(consumable)"
 sold_out = "Sold Out"
 dmg_10 = "(DMG:10)"
 dmg_20 = "(DMG:20)"
@@ -29,6 +29,7 @@ weapon_equiped = inventory[0]
 medical_supply = 0
 damage = 10
 gym_entered = False
+playerhealth = 100
 try:
     import os
     import time
@@ -76,7 +77,7 @@ def tutorial():
     input("Press enter to continue: ")
     print()
     print("COMBAT AND AMBUSHES")
-    slowprint("Combat is decided on D20 dice roll system, attacking, healing, checking inventory and checking enemy health will all use up one turn", 50)
+    slowprint("Combat is decided on skill check system, attacking, healing, checking inventory and checking enemy health will all use up one turn, regardless if you are successful", 50)
     slowprint("If you are victorious, you will be rewarded with Medical supplies", 50)
     input("Press enter to continue: ")
     print()
@@ -105,6 +106,111 @@ def skillcheck():
         user_correct = False
     return user_correct
 
+def combat():
+        wipe()
+        global enemyhealth
+        global enemydamage
+        global medical_supply
+        enemyhealth = random.randrange(80, 100)
+        enemydamage = random.randrange(10, 30)
+        global playerhealth
+        while enemyhealth > 0 or playerhealth > 0:
+            if enemyhealth > 100:
+                enemyhealth = 100
+            if playerhealth > 100:
+                playerhealth = 100
+            attackhit = None
+            enemyattackhit = random.randrange(0, 20)
+            enemymissorhit = random.randrange(0, 20)
+            enemyaction = random.randrange(1, 2)
+            slowprint("Your HP: " + str(playerhealth), 50)
+            playeraction = input("What would you like to do (Heal, Attack, Size Up, Inventory):")
+            print("")
+            if playeraction.lower() == "inventory":
+                print("Equipped: " + inventory[0])
+                print()
+                print(inventory[1:9], sep="\n")
+                print("Medical Supplies:", medical_supply)
+                while True:
+                    item_chosen = int(input("Enter The Number of The Item You wish to Use: "))
+                    if consumable not in inventory[item_chosen]:
+                        slowprint("You Cannot Consume a Weapon.")
+                    if consumable in inventory[item_chosen]:
+                        if "Red" in inventory[item_chosen]:
+                            slowprint("You Open The Red Prime, It Instantly Deals Damage To Your Enemy!")
+                            enemyhealth -= 20
+                            break
+                        if "Green" in inventory[item_chosen]:
+                            slowprint("You Drink The Green Prime, You Feel Rejuvenated!")
+                            playerhealth += 20
+                        if "Blue" in inventory[item_chosen]:
+                            slowprint("You Open the Blue Prime! The Scent alone makes the enemy not want to fight!")
+                            return
+            if playeraction.lower() == "heal" and medical_supply > 0 :
+                medical_supply -= 1
+                if medical_supply < 0:
+                    medical_supply = 0
+                playerhealth = playerhealth + 10
+                slowprint("You healed! Your health is: " + str(playerhealth), 50)
+                print("")
+            if playeraction.lower() == "heal" and medical_supply <= 0:
+                medical_supply = 0
+                slowprint("You Lack The Supplies to Heal Right Now")
+            if playeraction.lower() == "size up":
+                slowprint("You size up the enemy...", 50)
+                print("")
+                time.sleep(2)
+                if enemyhealth >= 80:
+                    slowprint("The enemy looks unscathed! Their health is:" + str(enemyhealth), 50)
+                    print("")
+                elif enemyhealth >= 40 and enemyhealth < 80:
+                    slowprint("The enemy looks minorly damaged! Their health is:" + str(enemyhealth), 50)
+                    print("")
+                elif enemyhealth < 50:
+                    slowprint("The enemy looks like they are about to faint! Their health is:" + str(enemyhealth), 50)
+                    print("")
+            if playeraction.lower() == "attack":
+                slowprint("You ready to attack!")
+                print("")
+                attackhit = skillcheck()
+                if attackhit:
+                    slowprint("You Hit The Enemy!")
+                    enemyhealth -= damage
+                if not attackhit:
+                    slowprint("You swung, but you missed")
+            if playeraction.lower() != "attack" and playeraction.lower() != "heal" and playeraction.lower() != "size up":
+                slowprint("INVALID INPUT", 50)
+                continue
+
+            if enemyhealth <= 0:
+                slowprint("The enemy falls to the ground... YOU WIN!", 50)
+                slowprint("You search the fallen enemy's pockets, and find some medical supplies!")
+                medical_found = random.randint(1,6)
+                slowprint("You Found " + str(medical_found) + " Medical Supplies!")
+                medical_supply += medical_found
+                break
+            if enemyaction == 1 and enemyattackhit >= enemymissorhit:
+                slowprint("The enemy winds up for an attack!", 50)
+                time.sleep(2)
+                slowprint("The enemy hits you! The attack stings badly...")
+                playerhealth = playerhealth - enemydamage
+            if enemyaction == 1 and enemyattackhit <= enemymissorhit:
+                slowprint("The enemy winds up for an attack!", 50)
+                time.sleep(2)
+                print("")
+                slowprint("You narrowly dodge the enemy's attack!")
+            if enemyaction == 2:
+                slowprint("The enemy begins to heal itself!")
+                enemyhealth = enemyhealth + random.randrange(10, 20)
+            if playerhealth <= 0:
+                slowprint("You fall to the ground and faint...")
+                loser = input("You Have Lost, Would You Like To Quit, Or Return To The Main Menu? (Menu, Quit): ")
+                if loser.lower() == "quit":
+                    quit()
+                if loser.lower() == "menu":
+                    menu()
+
+
 def map():
     wipe()
     global place
@@ -127,6 +233,8 @@ def map():
             floor_3()
         if place.lower() == "machine shop" or place.lower() == "machineshop":
             machine_shop()
+        if place == "problems":
+            combat()
 #Long story short, if the place variable matches the location, then it calls the location function
 
 def machine_shop():
@@ -247,7 +355,7 @@ def gym():
 
 def commons():
     wipe()
-    global commons_explored
+    global explored_list
     global action
     global medical_supply
     global inventory
@@ -262,7 +370,7 @@ def commons():
       if action == "move" or action == "Move":
         map()
           # If the player wants to move then call the map
-      if action.lower() == "explore" and explored_list[0]== 0:
+      if action.lower() == "explore" and explored_list[0] == 0:
         ambush = random.randrange(1,5)
         print()
         slowprint("You look around the commons area...", 50)
@@ -274,7 +382,8 @@ def commons():
             slowprint("Looks like there is a first aid kit hanging on the wall...", 50)
             slowprint("There should be enough in here to heal me 5 times, if I can be efficient with the supplies", 50)
             medical_supply = 5
-      if action.lower() == "explore" and commons_explored == 1:
+            explored_list[0] = 1
+      if action.lower() == "explore" and explored_list[0] == 1:
           print("You have checked the commons over again, there is nothing left")
       if action.lower() == "get some bitches":
           print("L + Ratio")
@@ -322,19 +431,41 @@ def intro():
         else:
             map()
 def menu():
- while place == 1:
-   wipe()
-   global new_game
-   while new_game == 0:
-     print("The Quest for the 3%: Junior year")
-     print()
+    global new_game
+    global place
+    global inventory
+    global shop_inventory
+    global action
+    global explored_list
+    global medical_supply
+    global damage
+    global gym_entered
+    global playerhealth
+    new_game = 0
+    place = 1
+    inventory = ["Metal Water Bottle - A Metal Water Bottle given to you by Davis (DMG:10)", ]
+    shop_inventory = ["ERIC'S PREMO PRIME!",
+                                 "1. Green Prime - Instant 20 health healed, no skill check needed (2 Medical Supplies)",
+                                 "2. Red Prime - Instant 20 damage to enemy (1 medical supply)",
+                                 "3. Blue Prime - 50/50 chance to instantly end combat when used (5 Medical supplies)"]
+    action = 0
+    explored_list = [0, 0, 0, 0, 0]
+    medical_supply = 0
+    damage = 10
+    gym_entered = False
+    playerhealth = 100
+    while place == 1:
+        wipe()
+        while new_game == 0:
+            print("The Quest for the 3%: Junior year")
+            print()
 
-     print()
-     new_game = input("Would you like start a new game or Play a tutorial? (Tutorial,New game): ")
-     if new_game.lower() == "new game" or new_game.lower() == "newgame":
-        intro()
-     if new_game.lower() == "tutorial":
-        tutorial()
+            print()
+            new_game = input("Would you like start a new game or Play a tutorial? (Tutorial,New game): ")
+            if new_game.lower() == "new game" or new_game.lower() == "newgame":
+                intro()
+            if new_game.lower() == "tutorial":
+                tutorial()
 
 
 print("                THE QUEST FOR THE 3%: Junior Year")

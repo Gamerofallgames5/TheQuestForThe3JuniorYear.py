@@ -296,7 +296,7 @@ def gym():
                         inventory.append("Green Prime - Lemon lime flavor, instant 20 health healed. (consumable)")
                         shop_inventory.pop(1)
                         shop_inventory.insert(1,"1. Sold Out")
-                if shop_item == 1 and sold_out in shop_inventory[1]:
+                elif shop_item == 1 and sold_out in shop_inventory[1]:
                     slowprint("Eric - \"Sorry man, Im sold out of that\"", 50)
                 if shop_item == 2 and sold_out not in shop_inventory[2]:
                     if medical_supply <= 1:
@@ -307,7 +307,7 @@ def gym():
                         inventory.append("Red Prime - Tropical Punch flavor, instant 20 damage dealt to enemy. (consumable)")
                         shop_inventory.pop(2)
                         shop_inventory.insert(2, "2. Sold out")
-                    if shop_item == 2 and sold_out in shop_inventory[2]:
+                    elif shop_item == 2 and sold_out in shop_inventory[2]:
                         slowprint("Eric - \"Sorry man, Im sold out of that\"", 50)
 
                 if shop_item == 3 and sold_out not in shop_inventory[3]:
@@ -319,7 +319,7 @@ def gym():
                         inventory.append("Blue Prime - Blue Raspberry flavor, 50/50 shot to end combat instantly. (consumable)")
                         shop_inventory.pop(3)
                         shop_inventory.insert(3, "3. Sold Out")
-                if shop_item == 3 and sold_out in shop_inventory[3]:
+                elif shop_item == 3 and sold_out in shop_inventory[3]:
                     slowprint("Eric - \"Sorry man, Im sold out of that\"", 50)
                 if shop_item != 1 and shop_item != 2 and shop_item != 3:
                     slowprint("That's not a valid item")
@@ -456,21 +456,20 @@ def menu():
     playerhealth = 100
     while place == 1:
         wipe()
-        while new_game == 0:
-            print("The Quest for the 3%: Junior year")
-            print()
+        print("The Quest for the 3%: Junior year")
+        print()
 
-            print()
-            new_game = input("Would you like start a new game or Play a tutorial? (Tutorial,New game): ")
-            if new_game.lower() == "new game" or new_game.lower() == "newgame":
-                intro()
-            if new_game.lower() == "tutorial":
-                tutorial()
+        print()
+        new_game = input("Would you like start a new game or Play a tutorial? (Tutorial,New game): ")
+        if new_game.lower() == "new game" or new_game.lower() == "newgame":
+            intro()
+        if new_game.lower() == "tutorial":
+            tutorial()
 
 
 print("                THE QUEST FOR THE 3%: Junior Year")
 print("                       ICS3U1a")
-print("                    January 2020")
+print("                    January 2023")
 print("                  By: Erins Bozhori")
 time.sleep(1.0)
 place = 1

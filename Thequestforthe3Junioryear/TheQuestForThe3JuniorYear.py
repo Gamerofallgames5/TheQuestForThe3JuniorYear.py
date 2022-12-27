@@ -77,7 +77,7 @@ def tutorial():
     input("Press enter to continue: ")
     print()
     print("COMBAT AND AMBUSHES")
-    slowprint("Combat is decided on skill check system, attacking, healing, checking inventory and checking enemy health will all use up one turn, regardless if you are successful", 50)
+    slowprint("Combat is decided on turn-based skill check system, attacking, healing, checking inventory and checking enemy health will all use up one turn, regardless if you are successful", 50)
     slowprint("If you are victorious, you will be rewarded with Medical supplies", 50)
     input("Press enter to continue: ")
     print()
@@ -87,6 +87,36 @@ def tutorial():
     slowprint("Without Medical supplies, you will be unable to heal, so please budget accordingly.", 50)
     input("Press enter to end the tutorial: ")
     intro()
+
+def quick_time_event(situation):
+    if situation == 1:
+        start_time = time.time()
+        input("You have 3 seconds, Press Enter To Dodge!: ")
+        end = time.time
+        elapsed = end - start_time
+        if elapsed < 3:
+            user_reaction = False
+        else:
+            user_reaction = True
+    if situation == 2:
+        start_time = time.time()
+        input("You have 3 seconds, Press Enter To Perform The Takedown!: ")
+        end = time.time
+        elapsed = end - start_time
+        if elapsed < 3:
+            user_reaction = False
+        else:
+            user_reaction = True
+    if situation == 3:
+        start_time = time.time()
+        input("You have 3 seconds, Press Enter To Jump!: ")
+        end = time.time
+        elapsed = end - start_time
+        if elapsed < 3:
+            user_reaction = False
+        else:
+            user_reaction = True
+    return user_reaction
 
 def skillcheck():
     slowprint("Skillcheck Time!")
@@ -101,8 +131,11 @@ def skillcheck():
     if user_anwser == anwser and time_elapsed <= 10:
         slowprint("CORRECT!")
         user_correct = True
-    else:
+    elif user_anwser != anwser:
         slowprint("INCORRECT")
+        user_correct = False
+    elif time_elapsed > 10:
+        slowprint("YOU TOOK TOO LONG!")
         user_correct = False
     return user_correct
 
@@ -132,20 +165,29 @@ def combat():
                 print(inventory[1:9], sep="\n")
                 print("Medical Supplies:", medical_supply)
                 while True:
-                    item_chosen = int(input("Enter The Number of The Item You wish to Use: "))
-                    if consumable not in inventory[item_chosen]:
-                        slowprint("You Cannot Consume a Weapon.")
-                    if consumable in inventory[item_chosen]:
-                        if "Red" in inventory[item_chosen]:
-                            slowprint("You Open The Red Prime, It Instantly Deals Damage To Your Enemy!")
-                            enemyhealth -= 20
-                            break
-                        if "Green" in inventory[item_chosen]:
-                            slowprint("You Drink The Green Prime, You Feel Rejuvenated!")
-                            playerhealth += 20
-                        if "Blue" in inventory[item_chosen]:
-                            slowprint("You Open the Blue Prime! The Scent alone makes the enemy not want to fight!")
-                            return
+                    try:
+                        item_chosen = int(input("Enter The Number of The Item You wish to Use: "))
+                    except ValueError:
+                        input("You have entered a invalid value. Press Enter to Continue: ")
+                        continue
+                    try:
+                        if consumable not in inventory[item_chosen]:
+                            slowprint("You Cannot Consume a Weapon.")
+                        if consumable in inventory[item_chosen]:
+                            if "Red" in inventory[item_chosen]:
+                                slowprint("You Open The Red Prime, It Instantly Deals Damage To Your Enemy!")
+                                enemyhealth -= 20
+                                break
+                            if "Green" in inventory[item_chosen]:
+                                slowprint("You Drink The Green Prime, You Feel Rejuvenated!")
+                                playerhealth += 20
+                                break
+                            if "Blue" in inventory[item_chosen]:
+                                slowprint("You Open the Blue Prime! The Scent alone makes the enemy not want to fight!")
+                                return
+                    except IndexError:
+                        input("You Have entered a invalid value. Press enter to continue: ")
+                        continue
             if playeraction.lower() == "heal" and medical_supply > 0 :
                 medical_supply -= 1
                 if medical_supply < 0:
@@ -247,11 +289,163 @@ def floor_2():
     pass
 
 def floor_1():
-    pass
+    wipe()
+    global explored_list
+    global action
+    global medical_supply
+    global inventory
+    global damage
+    while place.lower() == "floor 1" or place.lower() == "floor1":
+        wipe()
+        if "Cutting Torch" not in inventory:
+            slowprint("The doors to the first floor hallways have been welded shut. There might be something to help with that in the machine shop.")
+            input("Press enter to return to the map: ")
+            map()
+        else:
+            slowprint("After cracking open the first floor doors, something causes the school to shake violently. ", 50)
+            slowprint("You see two SMK students standing back to back, holding broadswords. Surrounded by Unconsious Cardinal Carter Kids.")
+            print()
+            action = input("What would you like to do (Move,talk,Inventory): ")
+            # GLOBAL VARIABLES AAAAAAAAH
+            # And this lets the player to make their choices
+            if action == "move" or action == "Move":
+                map()
+            # If the player wants to move then call the map
+            if action.lower() == "talk" and explored_list[3] == 0:
+                ambush = random.randrange(1, 5)
+                print()
+                slowprint("You talk two the two SMK students...", 50)
+                slowprint("Student 1: Oh thank God, Someone finally got those doors open!")
+                slowprint("Student 2: I Thought we would be stuck here for a while.")
+                slowprint("You: No worries. You guys have any idea why this is happening?")
+                slowprint("Student 1: No Clue. I think that these kids are trying to make up for losing the last basketball match against us.")
+                slowprint("Student 2: Yeah, we think their leader is on the third floor. Hopefully beating them up is enough to end this whole thing.")
+                slowprint("Student 1: We were trying to get up there ourselves, but we got ambused by about 2 dozen guys.")
+                slowprint("You: I'm Surprised you guys are still standing.")
+                slowprint("Student 2: Same here. Hey, why don't you try and take down their leader? We would, but you know, we are kinda tired.")
+                if ambush == 4:
+                    slowprint("You are about to say something, when 3 Cardinal Carter Kids suddenly attack the 3 of you!", 50)
+                    input("Press enter to start combat:")
+                    combat()
+                    slowprint("Upon winning the battle. One of the students throws you a spare Broadsword he has ")
+                    inventory.append("Broadsword - A Sword, Imbued with warrior spirit. (DMG:30)")
+                    slowprint("BROADSWORD OBTAINED! CHECK YOUR INVENTORY TO EQUIP IT!")
+                    input("Press enter to continue: ")
+                    explored_list[3] = 1
+                else:
+                    slowprint("You: Sure, Got anything that would help me?", 50)
+                    slowprint("Student 2: Yeah, Here is a spare sword. Take some of our medical supplies too, we have way too many.",50)
+                    inventory.append("Broadsword - A Sword, Imbued with warrior spirit. (DMG:30)")
+                    slowprint("BROADSWORD OBTAINED! CHECK YOUR INVENTORY TO EQUIP IT!")
+                    slowprint("+ 10 MEDICAL SUPPLIES!")
+                    input("Press enter to continue: ")
+                    medical_supply = 10
+                    explored_list[3] = 1
+            if action.lower() == "talk" and explored_list[3] == 1:
+                slowprint("You go to talk to the 2 SMK students again.")
+                slowprint("You: Anything new?")
+                slowprint("Student 1: Naw, nothing new.")
+            if action.lower() == "inventory":
+                wipe()
+                print("Equipped: " + inventory[0])
+                print()
+                print(*inventory[1:9], sep="\n")
+                print("Medical Supplies:", medical_supply)
+                inv_action = input("Would you like to Equip a new weapon? (Y/N): ")
+                if inv_action.lower() == "y":
+                    try:
+                        inv_index = int(input("Please enter the number of the weapon you want to equip: "))
+                    except ValueError:
+                        input("You have entered a invalid input. Press enter to continue: ")
+                        continue
+                    try:
+                        if consumable in inventory[inv_index]:
+                            input("You cannot equip a consumable")
+                        if consumable not in inventory[inv_index]:
+                            inventory.insert(0, inventory.pop(inv_index))
+                        if dmg_10 in inventory[0]:
+                            damage = 10
+                        if dmg_20 in inventory[0]:
+                            damage = 20
+                        if dmg_30 in inventory[0]:
+                            damage = 30
+                        if dmg_40 in inventory[0]:
+                            damage = 40
+                        if dmg_50 in inventory[0]:
+                            damage = 50
+                        input("NOW EQUIPPED: " + inventory[0] + "! Press enter to return to game: ")
+                    except IndexError:
+                        input("Invalid selection! Please press enter to return to the game: ")
 
 def arts():
-    pass
-
+    global explored_list
+    global action
+    global medical_supply
+    global inventory
+    global damage
+    while place.lower() == "art hall" or place.lower() == "arthall":
+      wipe()
+      slowprint("There is nothing much to see in the commons area", 50)
+      print()
+      action = input("What would you like to do (Move,Explore,Inventory): ")
+      #GLOBAL VARIABLES AAAAAAAAH
+      #And this lets the player to make their choices
+      if action.lower() == "move":
+        map()
+          # If the player wants to move then call the map
+      if action.lower() == "explore" and explored_list[1] == 0:
+        print()
+        slowprint("You look around the Arts Hall...", 50)
+        slowprint("The Hall itself is messy. There is obvious signs of a struggle and dirt tracks leading to the stage")
+        slowprint("Upon opening the door to the stage, you hear the sound of something cutting through the air near you")
+        if quick_time_event(1):
+            slowprint("You turn around quickly to see a girl in a SMK Uniform swinging a lightsaber down on your head. ")
+            slowprint("You quickly dodge out of the way and knock the weapon out of the girl's hand.")
+            slowprint("She apologizes profusely, and lets you keep the lightsaber as you escort her out of the school")
+            inventory.append("Lightsaber - A Lightsaber. It's a prop, but it has some decent weight to it.  (DMG:20)")
+            input("LIGHTSABER ADDED TO INVENTORY. Press Enter To Continue:")
+            explored_list[1] = 1
+        else:
+            slowprint("You aren't able to dodge the attack and pass out...", 50)
+            slowprint("When you come to, you see a Cardinal Carter student going through your pockets. He readies to fight you as you stand up.", 50)
+            combat()
+            slowprint("After Looting The Cardinal Carter Student, you look around the area. Finding A prop lightsaber left behind by someone")
+            inventory.append("Lightsaber - A Lightsaber. It's a prop, but it has some decent weight to it.  (DMG:20)")
+            input("LIGHTSABER ADDED TO INVENTORY. Press Enter To Continue:")
+            explored_list[1] = 1
+      if action.lower() == "explore" and explored_list[0] == 1:
+          print("You have checked the commons over again, there is nothing left")
+      if action.lower() == "inventory":
+          wipe()
+          print("Equipped: " + inventory[0])
+          print()
+          print(*inventory[1:9], sep="\n")
+          print("Medical Supplies:", medical_supply)
+          inv_action = input("Would you like to Equip a new weapon? (Y/N): ")
+          if inv_action.lower() == "y":
+            try:
+                inv_index = int(input("Please enter the number of the weapon you want to equip: "))
+            except ValueError:
+                input("You have entered a invalid input. Press enter to continue: ")
+                continue
+            try:
+                if consumable in inventory[inv_index]:
+                    input("You cannot equip a consumable")
+                if consumable not in inventory[inv_index]:
+                    inventory.insert(0,inventory.pop(inv_index))
+                    if dmg_10 in inventory[0]:
+                        damage = 10
+                    if dmg_20 in inventory[0]:
+                        damage = 20
+                    if dmg_30 in inventory[0]:
+                        damage = 30
+                    if dmg_40 in inventory[0]:
+                        damage = 40
+                    if dmg_50 in inventory[0]:
+                        damage = 50
+                    input("NOW EQUIPPED: " + inventory[0] + "! Press enter to return to game: ")
+            except IndexError:
+                 input("Invalid selection! Please press enter to return to the game: ")
 def gym():
     global gym_entered
     global action
@@ -272,6 +466,7 @@ def gym():
             slowprint("Robert - \"Prime man! Eric's started selling some Prime in the Gym, he has been making a killing trading for medical supplies\"")
             print()
             slowprint("Robert - \"You know what? Head on in, then you will see what Im talking about\"",50)
+            input("Press Enter To Continue: ")
             gym_entered = True
         if gym_entered:
             wipe()
@@ -316,12 +511,12 @@ def gym():
                     if medical_supply >= 5:
                         medical_supply = medical_supply - 5
                         slowprint("BLUE PRIME ADDED TO INVENTORY!")
-                        inventory.append("Blue Prime - Blue Raspberry flavor, 50/50 shot to end combat instantly. (consumable)")
+                        inventory.append("Blue Prime - Blue Raspberry flavor, ends combat instantly. (consumable)")
                         shop_inventory.pop(3)
                         shop_inventory.insert(3, "3. Sold Out")
                 elif shop_item == 3 and sold_out in shop_inventory[3]:
                     slowprint("Eric - \"Sorry man, Im sold out of that\"", 50)
-                if shop_item != 1 and shop_item != 2 and shop_item != 3:
+                elif shop_item != 1 and shop_item != 2 and shop_item != 3:
                     slowprint("That's not a valid item")
                     input("Press enter to return to game: ")
             if action.lower() == "inventory":
@@ -395,7 +590,11 @@ def commons():
           print("Medical Supplies:", medical_supply)
           inv_action = input("Would you like to Equip a new weapon? (Y/N): ")
           if inv_action.lower() == "y":
-            inv_index = int(input("Please enter the number of the weapon you want to equip: "))
+            try:
+                inv_index = int(input("Please enter the number of the weapon you want to equip: "))
+            except ValueError:
+                input("You have entered a invalid input. Press enter to continue: ")
+                continue
             try:
                 if consumable in inventory[inv_index]:
                     input("You cannot equip a consumable")
@@ -414,6 +613,7 @@ def commons():
                     input("NOW EQUIPPED: " + inventory[0] + "! Press enter to return to game: ")
             except IndexError:
                  input("Invalid selection! Please press enter to return to the game: ")
+
 def intro():
     while place == 1:
         wipe()

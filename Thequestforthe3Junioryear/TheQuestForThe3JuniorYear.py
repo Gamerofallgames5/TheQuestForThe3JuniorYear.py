@@ -280,7 +280,14 @@ def map():
 #Long story short, if the place variable matches the location, then it calls the location function
 
 def machine_shop():
-    pass
+    wipe()
+    global explored_list
+    global action
+    global medical_supply
+    global inventory
+    global damage
+    while place.lower() == "machine shop" or place.lower() == "machineshop":
+        wipe()
 
 def floor_3():
     pass
@@ -578,6 +585,7 @@ def commons():
             slowprint("There should be enough in here to heal me 5 times, if I can be efficient with the supplies", 50)
             medical_supply = 5
             explored_list[0] = 1
+            input("Press Enter To Continue:")
       if action.lower() == "explore" and explored_list[0] == 1:
           print("You have checked the commons over again, there is nothing left")
       if action.lower() == "get some bitches":

@@ -279,6 +279,9 @@ def map():
             combat()
 #Long story short, if the place variable matches the location, then it calls the location function
 
+def basketball():
+    pass
+
 def machine_shop():
     wipe()
     global explored_list
@@ -288,7 +291,19 @@ def machine_shop():
     global damage
     while place.lower() == "machine shop" or place.lower() == "machineshop":
         wipe()
-
+        slowprint("You enter the machine shop")
+        if explored_list[2] == 1:
+            slowprint("You see Christian once again, still dribbling that basketball. He invites you to play him again")
+        else:
+            slowprint("As you walk into the machine shop, you see Christian dribbling a basketball.")
+            slowprint("Christian - Hey! You looking for a way into the first floor? Well I've got a cutting torch, if you beat me in basketball I'll give it to you! ")
+        player_choice = input("Would You like to play Christian in Basketball? (Yes/No): ")
+        if player_choice.lower() == "yes" or player_choice.lower() == "y":
+            basketball()
+        else:
+            slowprint("Christian - Then leave, I need to practice my 3 point shot.")
+            input("Press enter to return to the map")
+            map()
 def floor_3():
     pass
 

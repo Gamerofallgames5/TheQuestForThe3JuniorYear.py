@@ -291,7 +291,7 @@ def machine_shop():
     global damage
     while place.lower() == "machine shop" or place.lower() == "machineshop":
         wipe()
-        slowprint("You enter the machine shop")
+        slowprint("You enter the machine sho")
         if explored_list[2] == 1:
             slowprint("You see Christian once again, still dribbling that basketball. He invites you to play him again")
         else:

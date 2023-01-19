@@ -139,6 +139,8 @@ def skillcheck():
         user_correct = False
     return user_correct
 
+
+
 def combat():
         wipe()
         global enemyhealth
@@ -279,8 +281,122 @@ def map():
             combat()
 #Long story short, if the place variable matches the location, then it calls the location function
 
-def basketball():
-    pass
+
+def combat_christian():
+    wipe()
+    global enemyhealth
+    global enemydamage
+    global medical_supply
+    enemyhealth = random.randrange(80, 100)
+    enemydamage = random.randrange(10, 30)
+    global playerhealth
+    while enemyhealth > 0 or playerhealth > 0:
+        if enemyhealth > 100:
+            enemyhealth = 100
+        if playerhealth > 100:
+            playerhealth = 100
+        attackhit = None
+        enemyattackhit = random.randrange(0, 20)
+        enemymissorhit = random.randrange(0, 20)
+        enemyaction = random.randrange(1, 2)
+        slowprint("Your HP: " + str(playerhealth), 50)
+        playeraction = input("What would you like to do (Heal, Attack, Size Up, Inventory):")
+        print("")
+        if playeraction.lower() == "inventory":
+            print("Equipped: " + inventory[0])
+            print()
+            print(inventory[1:9], sep="\n")
+            print("Medical Supplies:", medical_supply)
+            while True:
+                try:
+                    item_chosen = int(input("Enter The Number of The Item You wish to Use: "))
+                except ValueError:
+                    input("You have entered a invalid value. Press Enter to Continue: ")
+                    continue
+                try:
+                    if consumable not in inventory[item_chosen]:
+                        slowprint("You Cannot Consume a Weapon.")
+                    if consumable in inventory[item_chosen]:
+                        if "Red" in inventory[item_chosen]:
+                            slowprint("You Open The Red Prime, It Instantly Deals Damage To Your Enemy!")
+                            enemyhealth -= 20
+                            break
+                        if "Green" in inventory[item_chosen]:
+                            slowprint("You Drink The Green Prime, You Feel Rejuvenated!")
+                            playerhealth += 20
+                            break
+                        if "Blue" in inventory[item_chosen]:
+                            slowprint("You Open the Blue Prime! The Scent alone makes the enemy not want to fight!")
+                            return
+                except IndexError:
+                    input("You Have entered a invalid value. Press enter to continue: ")
+                    continue
+        if playeraction.lower() == "heal" and medical_supply > 0:
+            medical_supply -= 1
+            if medical_supply < 0:
+                medical_supply = 0
+            playerhealth = playerhealth + 10
+            slowprint("You healed! Your health is: " + str(playerhealth), 50)
+            print("")
+        if playeraction.lower() == "heal" and medical_supply <= 0:
+            medical_supply = 0
+            slowprint("You Lack The Supplies to Heal Right Now")
+        if playeraction.lower() == "size up":
+            slowprint("You size up the enemy...", 50)
+            print("")
+            time.sleep(2)
+            if enemyhealth >= 80:
+                slowprint("The enemy looks unscathed! Their health is:" + str(enemyhealth), 50)
+                print("")
+            elif enemyhealth >= 40 and enemyhealth < 80:
+                slowprint("The enemy looks minorly damaged! Their health is:" + str(enemyhealth), 50)
+                print("")
+            elif enemyhealth < 50:
+                slowprint("The enemy looks like they are about to faint! Their health is:" + str(enemyhealth), 50)
+                print("")
+        if playeraction.lower() == "attack":
+            slowprint("You ready to attack!")
+            print("")
+            attackhit = skillcheck()
+            if attackhit:
+                slowprint("You Hit The Enemy!")
+                enemyhealth -= damage
+            if not attackhit:
+                slowprint("You swung, but you missed")
+        if playeraction == "win":
+            enemyhealth = 0
+        if playeraction == "lose":
+            playerhealth = 0
+        if playeraction.lower() != "attack" and playeraction.lower() != "heal" and playeraction.lower() != "size up":
+            slowprint("INVALID INPUT", 50)
+            continue
+
+        if enemyhealth <= 0:
+            slowprint("The enemy falls to the ground... YOU WIN!", 50)
+            slowprint("You search the fallen enemy's pockets, and find some medical supplies!")
+            medical_found = random.randint(1, 6)
+            slowprint("You Found " + str(medical_found) + " Medical Supplies!")
+            medical_supply += medical_found
+            christian_fight = 1
+            return christian_fight
+        if enemyaction == 1 and enemyattackhit >= enemymissorhit:
+            slowprint("The enemy winds up for an attack!", 50)
+            time.sleep(2)
+            slowprint("The enemy hits you! The attack stings badly...")
+            playerhealth = playerhealth - enemydamage
+        if enemyaction == 1 and enemyattackhit <= enemymissorhit:
+            slowprint("The enemy winds up for an attack!", 50)
+            time.sleep(2)
+            print("")
+            slowprint("You narrowly dodge the enemy's attack!")
+        if enemyaction == 2:
+            slowprint("The enemy begins to heal itself!")
+            enemyhealth = enemyhealth + random.randrange(10, 20)
+        if playerhealth <= 0:
+            slowprint("You fall to the ground and faint...")
+            christian_fight = 0
+            return christian_fight
+
 
 def machine_shop():
     wipe()
@@ -291,15 +407,27 @@ def machine_shop():
     global damage
     while place.lower() == "machine shop" or place.lower() == "machineshop":
         wipe()
-        slowprint("You enter the machine sho")
+        slowprint("You enter the machine shop")
         if explored_list[2] == 1:
             slowprint("You see Christian once again, still dribbling that basketball. He invites you to play him again")
         else:
             slowprint("As you walk into the machine shop, you see Christian dribbling a basketball.")
-            slowprint("Christian - Hey! You looking for a way into the first floor? Well I've got a cutting torch, if you beat me in basketball I'll give it to you! ")
-        player_choice = input("Would You like to play Christian in Basketball? (Yes/No): ")
+            slowprint("Christian - Hey! You looking for a way into the first floor? Well I've got a cutting torch, if you beat me in a fight I'll give it to you! ")
+        player_choice = input("Would You like to fight Christian now? (Yes/No): ")
         if player_choice.lower() == "yes" or player_choice.lower() == "y":
-            basketball()
+            torch_fight = combat_christian()
+            if torch_fight == 1:
+                slowprint("Christian - That Was A Good Fight Man!, Here's The Torch")
+                inventory.append("Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)")
+                slowprint("CUTTING TORCH OBTAINED! CHECK YOUR INVENTORY TO EQUIP IT!")
+                input("Press Enter to Continue: ")
+                explored_list[2] = 1
+            if torch_fight == 0:
+                slowprint("Christian - That Was A Good Try Man... Here's The Torch for your troubles.")
+                inventory.append("Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)")
+                slowprint("CUTTING TORCH OBTAINED! CHECK YOUR INVENTORY TO EQUIP IT!")
+                input("Press Enter to Continue: ")
+                explored_list[2] == 1
         else:
             slowprint("Christian - Then leave, I need to practice my 3 point shot.")
             input("Press enter to return to the map")
@@ -319,8 +447,8 @@ def floor_1():
     global damage
     while place.lower() == "floor 1" or place.lower() == "floor1":
         wipe()
-        if "Cutting Torch" not in inventory:
-            slowprint("The doors to the first floor hallways have been welded shut. There might be something to help with that in the machine shop.")
+        if inventory[0] !=  "Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)":
+            slowprint("The doors to the first floor hallways have been welded shut. I should Equip a Cutting Torch To Get through here. There Should be one in the machine shop.")
             input("Press enter to return to the map: ")
             map()
         else:
@@ -357,7 +485,7 @@ def floor_1():
                 else:
                     slowprint("You: Sure, Got anything that would help me?", 50)
                     slowprint("Student 2: Yeah, Here is a spare sword. Take some of our medical supplies too, we have way too many.",50)
-                    inventory.append("Broadsword - A Sword, Imbued with warrior spirit. (DMG:30)")
+                    inventory.append("Broadsword - A Sword, Imbued with warrior spirit. (DMG:40)")
                     slowprint("BROADSWORD OBTAINED! CHECK YOUR INVENTORY TO EQUIP IT!")
                     slowprint("+ 10 MEDICAL SUPPLIES!")
                     input("Press enter to continue: ")

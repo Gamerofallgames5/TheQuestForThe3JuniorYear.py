@@ -24,7 +24,7 @@ dmg_30 = "(DMG:30)"
 dmg_40 = "(DMG:40)"
 dmg_50 = "(DMG:50)"
 action = 0
-explored_list = [0,0,0,0,0]
+explored_list = [0,0,0,0,0,0]
 weapon_equiped = inventory[0]
 medical_supply = 0
 damage = 10
@@ -262,7 +262,7 @@ def map():
     place = "test"
     print()
     while place.lower() != "gym" or place.lower() != "commons" or place.lower() != "arts hall" or place.lower() == "floor 1" or place.lower() == "floor1" or place.lower() == "floor 2" or place.lower() == "floor2" or place.lower() == "floor 3" or place.lower() == "floor3" or place.lower() == "machine shop" or place.lower == ("machineshop"):
-        place = input("Where would you like to go? (Commons, Arts Hall, Gym, Floor 1, Floor 2, Floor 3):  ")
+        place = input("Where would you like to go? (Commons, Arts Hall, Gym, Machine Shop, Floor 1, Floor 2, Floor 3):  ")
         if place.lower() == "commons":
             commons()
         if place.lower() == "gym":
@@ -318,7 +318,7 @@ def combat_christian():
                         slowprint("You Cannot Consume a Weapon.")
                     if consumable in inventory[item_chosen]:
                         if "Red" in inventory[item_chosen]:
-                            slowprint("You Open The Red Prime, It Instantly Deals Damage To Your Enemy!")
+                            slowprint("You Open The Red Prime, It Instantly Deals Damage To Christian!")
                             enemyhealth -= 20
                             break
                         if "Green" in inventory[item_chosen]:
@@ -326,8 +326,8 @@ def combat_christian():
                             playerhealth += 20
                             break
                         if "Blue" in inventory[item_chosen]:
-                            slowprint("You Open the Blue Prime! The Scent alone makes the enemy not want to fight!")
-                            return
+                            slowprint("Christian Doesn't React To The Blue Prime!")
+                            break
                 except IndexError:
                     input("You Have entered a invalid value. Press enter to continue: ")
                     continue
@@ -346,10 +346,10 @@ def combat_christian():
             print("")
             time.sleep(2)
             if enemyhealth >= 80:
-                slowprint("The enemy looks unscathed! Their health is:" + str(enemyhealth), 50)
+                slowprint("Christian looks unscathed! Their health is:" + str(enemyhealth), 50)
                 print("")
             elif enemyhealth >= 40 and enemyhealth < 80:
-                slowprint("The enemy looks minorly damaged! Their health is:" + str(enemyhealth), 50)
+                slowprint("Christian looks minorly damaged! Their health is:" + str(enemyhealth), 50)
                 print("")
             elif enemyhealth < 50:
                 slowprint("The enemy looks like they are about to faint! Their health is:" + str(enemyhealth), 50)
@@ -359,7 +359,7 @@ def combat_christian():
             print("")
             attackhit = skillcheck()
             if attackhit:
-                slowprint("You Hit The Enemy!")
+                slowprint("You Hit Christian!")
                 enemyhealth -= damage
             if not attackhit:
                 slowprint("You swung, but you missed")
@@ -372,25 +372,21 @@ def combat_christian():
             continue
 
         if enemyhealth <= 0:
-            slowprint("The enemy falls to the ground... YOU WIN!", 50)
-            slowprint("You search the fallen enemy's pockets, and find some medical supplies!")
-            medical_found = random.randint(1, 6)
-            slowprint("You Found " + str(medical_found) + " Medical Supplies!")
-            medical_supply += medical_found
+            slowprint("Christian falls to the ground... YOU WIN!", 50)
             christian_fight = 1
             return christian_fight
         if enemyaction == 1 and enemyattackhit >= enemymissorhit:
-            slowprint("The enemy winds up for an attack!", 50)
+            slowprint("Christian winds up for an attack!", 50)
             time.sleep(2)
-            slowprint("The enemy hits you! The attack stings badly...")
+            slowprint("Christian hits you! The attack stings badly...")
             playerhealth = playerhealth - enemydamage
         if enemyaction == 1 and enemyattackhit <= enemymissorhit:
-            slowprint("The enemy winds up for an attack!", 50)
+            slowprint("Christian winds up for an attack!", 50)
             time.sleep(2)
             print("")
-            slowprint("You narrowly dodge the enemy's attack!")
+            slowprint("You narrowly dodge the Christian's attack!")
         if enemyaction == 2:
-            slowprint("The enemy begins to heal itself!")
+            slowprint("Christian begins to heal himself!")
             enemyhealth = enemyhealth + random.randrange(10, 20)
         if playerhealth <= 0:
             slowprint("You fall to the ground and faint...")
@@ -413,30 +409,175 @@ def machine_shop():
         else:
             slowprint("As you walk into the machine shop, you see Christian dribbling a basketball.")
             slowprint("Christian - Hey! You looking for a way into the first floor? Well I've got a cutting torch, if you beat me in a fight I'll give it to you! ")
-        player_choice = input("Would You like to fight Christian now? (Yes/No): ")
-        if player_choice.lower() == "yes" or player_choice.lower() == "y":
+        player_choice = input("What Would You like to do? (Move/Fight/Inventory): ")
+        if player_choice.lower() == "fight":
             torch_fight = combat_christian()
             if torch_fight == 1:
+                wipe()
                 slowprint("Christian - That Was A Good Fight Man!, Here's The Torch")
                 inventory.append("Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)")
                 slowprint("CUTTING TORCH OBTAINED! CHECK YOUR INVENTORY TO EQUIP IT!")
                 input("Press Enter to Continue: ")
                 explored_list[2] = 1
             if torch_fight == 0:
+                wipe()
                 slowprint("Christian - That Was A Good Try Man... Here's The Torch for your troubles.")
                 inventory.append("Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)")
                 slowprint("CUTTING TORCH OBTAINED! CHECK YOUR INVENTORY TO EQUIP IT!")
                 input("Press Enter to Continue: ")
                 explored_list[2] == 1
-        else:
-            slowprint("Christian - Then leave, I need to practice my 3 point shot.")
-            input("Press enter to return to the map")
+        if player_choice.lower() == "move":
             map()
-def floor_3():
+        if player_choice.lower() == "inventory":
+            wipe()
+            print("Equipped: " + inventory[0])
+            print()
+            print(inventory[1:9], sep="\n")
+            print("Medical Supplies:", medical_supply)
+            inv_action = input("Would you like to Equip a new weapon? (Y/N): ")
+            if inv_action.lower() == "y":
+                inv_index = int(input("Please enter the number of the weapon you want to equip: "))
+                try:
+                    if consumable in inventory[inv_index]:
+                        input("You cannot equip a consumable")
+                    if consumable not in inventory[inv_index]:
+                        inventory.insert(0, inventory.pop(inv_index))
+                        if dmg_10 in inventory[0]:
+                            damage = 10
+                        if dmg_20 in inventory[0]:
+                            damage = 20
+                        if dmg_30 in inventory[0]:
+                            damage = 30
+                        if dmg_40 in inventory[0]:
+                            damage = 40
+                        if dmg_50 in inventory[0]:
+                            damage = 50
+                            input("NOW EQUIPPED: " + inventory[0] + "! Press enter to return to game: ")
+                except IndexError:
+                    input("Invalid selection! Please press enter to return to the game: ")
+
+
+def finalboss():
     pass
 
+
+def floor_3():
+    wipe()
+    global explored_list
+    global action
+    global medical_supply
+    global inventory
+    global damage
+    while place.lower() == "floor 3" or place.lower() == "floor3":
+        if explored_list[5] != 1:
+            slowprint("You can't go to the third floor. The first floor doors are still welded shut")
+            input("Press enter to return the map: ")
+            map()
+        wipe()
+        final_decision = input("This is a point of no return. Are you certain you are ready for the final Boss Fight?: (Y/N): ")
+        if final_decision.lower() == "n" or final_decision.lower() == "no":
+            input("Press Enter to return to the map: ")
+            map()
+        if final_decision.lower() == "y" or final_decision.lower() == "yes":
+            slowprint("You Climb to the third floor...")
+            slowprint("It looks like a warzone, SMK students are strewn about, drifting in and out of consciousness")
+            slowprint("You look down the hallway. The windows have been broken, and a ladder hangs outside.")
+            slowprint("You notice a heavily armored Cardinal Carter student guarding the window. You approach stealthily")
+            slowprint("You throw a piece of debris to distract the armored guard, as soon as he turns around you rush to take them down! ")
+            takedown = quick_time_event(2)
+            if takedown:
+                slowprint("You quickly knock them out, only to hear a classroom door opening further down the hall, and a Cardinal Carter student yell at you to freeze")
+                slowprint("A large amount of Cardinal Carter Students begin to flood the hallway in force. You stand no chance against them. You proceed to make a jump to the ladder!")
+                jump = quick_time_event(3)
+                if jump:
+                    slowprint("You quickly latch onto and climb the ladder, kicking it away once you reach the top...")
+                    slowprint("It is then you see it. A giant blob of Cardinal Carter students, acting as a single entity, as a hivemind.")
+                    slowprint("You steel yourself. This seems like it's going to be the final battle...")
+                    finalboss()
+                if not jump:
+                    slowprint("You can't work up the nerve to take the leap. You are surrounded and captured By Cardinal Carter Students... It's Over...")
+                    slowprint("CAPTURED ENDING: 1/4")
+                    input("Press Enter to Quit: ")
+                    quit()
+            if not takedown:
+                slowprint("The armored student turns around and pushes you away. They then proceed to knock you out with a single punch. When you come too, you realize you have been tied up...")
+                slowprint("CAPTURED ENDING: 1/4")
+                input("Press Enter to Quit: ")
+                quit()
+                
+            
+        
+
 def floor_2():
-    pass
+    wipe()
+    global explored_list
+    global action
+    global medical_supply
+    global inventory
+    global damage
+    while place.lower() == "floor 2" or place.lower() == "floor2":
+        if explored_list[5] != 1:
+            slowprint("You can't go to the second floor. The first floor doors are still welded shut")
+            input("Press enter to return the map: ")
+            map()
+        wipe()
+        slowprint("You climb Up the stairs to the second floor. This place gives you a uneasy feeling. Almost like it's the final room before a boss fight...", 50)
+        print()
+        action = input("What would you like to do (Move,Explore,Inventory): ")
+        # GLOBAL VARIABLES AAAAAAAAH
+        # And this lets the player to make their choices
+        if action.lower == "move":
+            map()
+            # If the player wants to move then call the map
+        if action.lower() == "explore" and explored_list[4] == 0:
+            ambush = random.randrange(1, 5)
+            print()
+            slowprint("You look around the second floor hallways...", 50)
+            if ambush == 4:
+                slowprint("You Have Been Ambushed! Prepare for battle!", 50)
+                input("Press enter to start combat:")
+                combat()
+            else:
+                slowprint("There is a giant table, filled to the brim with medical supplies. There is also a RPG sitting on the table.", 50)
+                slowprint("There is a note strapped to the RPG: \"Desperate Times May Require Desperate Measures\"")
+                medical_supply += 10
+                inventory.append("RPG - Desperate Times, Require Desperate Measures... (consumable)")
+                input("RPG OBTAINED. IT IS A SINGLE USE CONSUMABLE. USE IT IN THE BOSS FIGHT TO GET THE RPG ENDING")
+                explored_list[4] = 1
+                input("Press Enter To Continue:")
+        if action.lower() == "explore" and explored_list[4] == 1:
+            print("You have checked the second floor halls over again, there is nothing left")
+        if action.lower() == "inventory":
+            wipe()
+            print("Equipped: " + inventory[0])
+            print()
+            print(*inventory[1:9], sep="\n")
+            print("Medical Supplies:", medical_supply)
+            inv_action = input("Would you like to Equip a new weapon? (Y/N): ")
+            if inv_action.lower() == "y":
+                try:
+                    inv_index = int(input("Please enter the number of the weapon you want to equip: "))
+                except ValueError:
+                    input("You have entered a invalid input. Press enter to continue: ")
+                    continue
+                try:
+                    if consumable in inventory[inv_index]:
+                        input("You cannot equip a consumable")
+                    if consumable not in inventory[inv_index]:
+                        inventory.insert(0, inventory.pop(inv_index))
+                        if dmg_10 in inventory[0]:
+                            damage = 10
+                        if dmg_20 in inventory[0]:
+                            damage = 20
+                        if dmg_30 in inventory[0]:
+                            damage = 30
+                        if dmg_40 in inventory[0]:
+                            damage = 40
+                        if dmg_50 in inventory[0]:
+                            damage = 50
+                        input("NOW EQUIPPED: " + inventory[0] + "! Press enter to return to game: ")
+                except IndexError:
+                    input("Invalid selection! Please press enter to return to the game: ")
 
 def floor_1():
     wipe()
@@ -447,12 +588,15 @@ def floor_1():
     global damage
     while place.lower() == "floor 1" or place.lower() == "floor1":
         wipe()
-        if inventory[0] !=  "Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)":
+        if inventory[0] !=  "Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)" and explored_list[5] != 1:
             slowprint("The doors to the first floor hallways have been welded shut. I should Equip a Cutting Torch To Get through here. There Should be one in the machine shop.")
             input("Press enter to return to the map: ")
             map()
-        else:
-            slowprint("After cracking open the first floor doors, something causes the school to shake violently. ", 50)
+        if inventory[0] ==  "Cutting Torch - A Butane Cutting Torch, Looks like I Could Use This To Cut Through Some Strong Welds.  (DMG:30)" and explored_list[5] != 1:
+            slowprint("After cracking open the first floor doors, something causes the school to shake violently.")
+            explored_list[5] = 1
+        if explored_list[5] == 1:
+            slowprint("you step into the first floor hallway ", 50)
             slowprint("You see two SMK students standing back to back, holding broadswords. Surrounded by Unconsious Cardinal Carter Kids.")
             print()
             action = input("What would you like to do (Move,talk,Inventory): ")

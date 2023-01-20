@@ -441,7 +441,146 @@ def combat_christian():
 # special combat function for the christian fight
 
 def finalbossfight():
-    pass
+    wipe()
+    global enemyhealth
+    global enemydamage
+    global medical_supply
+    enemyhealth = 1000
+    enemydamage = 50
+    global playerhealth
+    while enemyhealth > 0 or playerhealth > 0:
+        if enemyhealth > 100:
+            enemyhealth = 100
+        if playerhealth > 100:
+            playerhealth = 100
+        attackhit = None
+        enemyattackhit = random.randrange(0, 20)
+        enemymissorhit = random.randrange(0, 20)
+        enemyaction = random.randrange(1, 2)
+        slowprint("Your HP: " + str(playerhealth), 50)
+        playeraction = input("What would you like to do (Heal, Attack, Size Up, Inventory):")
+        print("")
+        if playeraction.lower() == "inventory":
+            print("Equipped: " + inventory[0])
+            print()
+            print(inventory[1:9], sep="\n")
+            print("Medical Supplies:", medical_supply)
+            while True:
+                try:
+                    item_chosen = int(input("Enter The Number of The Item You wish to Use: "))
+                except ValueError:
+                    input("You have entered a invalid value. Press Enter to Continue: ")
+                    continue
+                try:
+                    if consumable not in inventory[item_chosen]:
+                        slowprint("You Cannot Consume a Weapon.")
+                    if consumable in inventory[item_chosen]:
+                        if "Red" in inventory[item_chosen]:
+                            slowprint("You Open The Red Prime, It Instantly Deals Damage To Your Enemy!")
+                            enemyhealth -= 20
+                            inventory.pop(item_chosen)
+                            break
+                        if "Green" in inventory[item_chosen]:
+                            slowprint("You Drink The Green Prime, You Feel Rejuvenated!")
+                            playerhealth += 20
+                            inventory.pop(item_chosen)
+                            break
+                        if "Blue" in inventory[item_chosen]:
+                            wipe()
+                            slowprint("You pop open the blue prime bottle. Praying for a miracle")
+                            slowprint("You squeeze your eyes shut, as you present the bottle towards the mass of students...")
+                            time.sleep(5)
+                            slowprint("...",1000)
+                            slowprint("\"Yo... Is that prime? Can we have some?\"")
+                            slowprint("You open your eyes to see the roof filled with normal Cardinal Carter students, acting rationally for once.")
+                            slowprint("You give them the remainder of your prime, and have them agree to leave peacefully and never come back...")
+                            slowprint("PEACE IN OUR TIME ENDING: ENDING 3/4")
+                            input("Press Enter to Quit: ")
+                            quit()
+                        if "RPG" in inventory[item_chosen]:
+                            wipe()
+                            slowprint("You sling the RPG over your shoulder")
+                            slowprint("You squeeze the trigger, as you shut your eyes to avoid seeing the carnage.")
+                            time.sleep(5)
+                            slowprint("...",1000)
+                            slowprint("*BEEP* *BEEP* *BEEP*")
+                            slowprint("You wake up, at home in your bed.")
+                            slowprint("It was all a dream...")
+                            slowprint("RPG IN A RPG ENDING: ENDING 2/4")
+                            input("Press Enter to Quit: ")
+                            quit()
+                except IndexError:
+                    input("You Have entered a invalid value. Press enter to continue: ")
+                    continue
+        # Combat inventory logic, this is mainly allows the user to use the bottles of prime they can buy from the gym
+        if playeraction.lower() == "heal" and medical_supply > 0:
+            medical_supply -= 1
+            if medical_supply < 0:
+                medical_supply = 0
+            playerhealth = playerhealth + 10
+            slowprint("You healed! Your health is: " + str(playerhealth), 50)
+            print("")
+        if playeraction.lower() == "heal" and medical_supply <= 0:
+            medical_supply = 0
+            slowprint("You Lack The Supplies to Heal Right Now")
+        if playeraction.lower() == "size up":
+            slowprint("You size up the enemy...", 50)
+            print("")
+            time.sleep(2)
+            if enemyhealth >= 750:
+                slowprint("The enemy looks unscathed! Their health is:" + str(enemyhealth), 50)
+                print("")
+            elif enemyhealth >= 250 and enemyhealth < 750:
+                slowprint("The enemy looks minorly damaged! Their health is:" + str(enemyhealth), 50)
+                print("")
+            elif enemyhealth < 250:
+                slowprint("The enemy looks like they are about to faint! Their health is:" + str(enemyhealth), 50)
+                print("")
+        if playeraction.lower() == "attack":
+            slowprint("You ready to attack!")
+            print("")
+            attackhit = skillcheck()
+            if attackhit:
+                slowprint("You Hit The Enemy!")
+                enemyhealth -= damage
+            if not attackhit:
+                slowprint("You swung, but you missed")
+        if playeraction.lower() != "attack" and playeraction.lower() != "heal" and playeraction.lower() != "size up":
+            slowprint("INVALID INPUT", 50)
+            continue
+
+        if enemyhealth <= 0:
+            wipe()
+            slowprint("You stand victorious. The blob of students crawls it's way off the roof, and back to Cardinal Carter...")
+            time.sleep(5)
+            slowprint("...", 1000)
+            slowprint("You are celebrated as a hero in SMK, You are even given an exemption from wearing the uniform")
+            slowprint("As You celebrate, You can't help but have a pit in your stomach...   ")
+            slowprint("You feel as if... It isn't truly over... That they may come back...")
+            slowprint("But for now, the school is safe.")
+            slowprint("VICTORY ENDING: ENDING 4/4")
+            input("Press Enter to Quit: ")
+            quit()
+        if enemyaction == 1 and enemyattackhit >= enemymissorhit:
+            slowprint("The enemy winds up for an attack!", 50)
+            time.sleep(2)
+            slowprint("The enemy hits you! The attack stings badly...")
+            playerhealth = playerhealth - enemydamage
+        if enemyaction == 1 and enemyattackhit <= enemymissorhit:
+            slowprint("The enemy winds up for an attack!", 50)
+            time.sleep(2)
+            print("")
+            slowprint("You narrowly dodge the enemy's attack!")
+        if enemyaction == 2:
+            slowprint("The enemy begins to heal itself!")
+            enemyhealth = enemyhealth + random.randrange(10, 20)
+        if playerhealth <= 0:
+            slowprint("You fall to the ground and faint...")
+            loser = input("You Have Lost, Would You Like To Quit, Or Return To The Main Menu? (Menu, Quit): ")
+            if loser.lower() == "quit":
+                quit()
+            if loser.lower() == "menu":
+                menu()
 
 
 # Special combat function for the final boss, also contains most of the endings

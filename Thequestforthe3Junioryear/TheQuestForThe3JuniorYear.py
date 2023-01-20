@@ -286,11 +286,9 @@ def combat():
             enemyhealth = enemyhealth + random.randrange(10, 20)
         if playerhealth <= 0:
             slowprint("You fall to the ground and faint...")
-            loser = input("You Have Lost, Would You Like To Quit, Or Return To The Main Menu? (Menu, Quit): ")
-            if loser.lower() == "quit":
-                quit()
-            if loser.lower() == "menu":
-                menu()
+            input("Press enter to quit: ")
+            quit()
+
 
 
 # Combat system, The Same as my previous game, but with added skillcheck and inventory functionality

@@ -493,7 +493,7 @@ def floor_3():
                     slowprint("You quickly latch onto and climb the ladder, kicking it away once you reach the top...")
                     slowprint("It is then you see it. A giant blob of Cardinal Carter students, acting as a single entity, as a hivemind.")
                     slowprint("You steel yourself. This seems like it's going to be the final battle...")
-                    finalboss()
+                    finalbossfight()
                 if not jump:
                     slowprint("You can't work up the nerve to take the leap. You are surrounded and captured By Cardinal Carter Students... It's Over...")
                     slowprint("CAPTURED ENDING: 1/4")

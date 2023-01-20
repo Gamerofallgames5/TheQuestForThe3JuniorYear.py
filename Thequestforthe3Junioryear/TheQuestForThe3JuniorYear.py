@@ -457,7 +457,7 @@ def machine_shop():
                     input("Invalid selection! Please press enter to return to the game: ")
 
 
-def finalboss():
+def finalbossfight():
     pass
 
 
